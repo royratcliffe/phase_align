@@ -25,7 +25,7 @@ enable_testing()
 include(CTest)
 create_test_sourcelist(test_sources
     test_runner.c
-    test/phase_align_1.c
+    test/phase_align_no_shift.c
     test/phase_align_right_shift.c
     test/phase_align_left_shift.c
 )
@@ -38,9 +38,9 @@ add_executable(test_runner
 )
 target_link_libraries(test_runner phase_align)
 
-add_test(NAME phase_align_test_1 COMMAND test_runner test/phase_align_1)
-add_test(NAME phase_align_test_right_shift COMMAND test_runner test/phase_align_right_shift)
-add_test(NAME phase_align_test_left_shift COMMAND test_runner test/phase_align_left_shift)
+add_test(NAME no_shift COMMAND test_runner test/phase_align_no_shift)
+add_test(NAME right_shift COMMAND test_runner test/phase_align_right_shift)
+add_test(NAME left_shift COMMAND test_runner test/phase_align_left_shift)
 
 # https://cmake.org/cmake/help/latest/module/FindDoxygen.html
 # https://www.mcternan.me.uk/mscgen/
