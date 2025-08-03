@@ -4,7 +4,7 @@
 
 int test_phase_align_right_shift(int argc, char *argv[])
 {
-    uint8_t data[] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0};
+    const uint8_t data[] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0};
     struct phase_align pa;
     /*
      * Note that the destination x is 4, and the source x_store is 0.
@@ -25,7 +25,9 @@ int test_phase_align_right_shift(int argc, char *argv[])
     assert((phase_align_fetch(&pa) & 0xffU) == 0xabU);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xcdU);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xefU);
+
     phase_align_start(&pa, 0, 36, data);
+    assert(pa.shift == 4);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xabU);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xcdU);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xefU);
