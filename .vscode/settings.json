@@ -1,0 +1,3 @@
+{
+    "cmake.ctest.debugLaunchTarget": "Debug test_runner"
+}
