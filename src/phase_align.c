@@ -1,4 +1,9 @@
-#include <phase_align.h>
+/*
+ * SPDX-FileCopyrightText: 1996, 1998, 1999, 2002, Roy Ratcliffe, Northumberland, United Kingdom
+ * SPDX-License-Identifier: MIT
+ */
+
+ #include <phase_align.h>
 
 /*!
  * \brief Fetches a 8-bit byte from the phase alignment structure with a left shift.
@@ -36,14 +41,6 @@ uint8_t fetch_right_shift(struct phase_align *pa)
     return (hi << (8 - pa->shift)) | (lo >> pa->shift);
 }
 
-/*!
- * \brief Initialises the phase alignment structure.
- * This function sets up the phase alignment structure with the given parameters.
- * \param pa Pointer to the phase alignment structure.
- * \param x The destination bit position.
- * \param x_store The source bit position.
- * \param store Pointer to the data buffer.
- */
 void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t *store)
 {
     pa->store = store + (x_store >> 3);
@@ -71,11 +68,6 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
     }
 }
 
-/*!
- * \brief Fetches the next byte from the phase alignment structure.
- * \param pa Pointer to the phase alignment structure.
- * \return The fetched byte.
- */
 uint8_t phase_align_fetch(struct phase_align *pa)
 {
     return (*pa->fetch)(pa);
