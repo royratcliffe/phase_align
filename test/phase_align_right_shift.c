@@ -31,5 +31,22 @@ int test_phase_align_right_shift(int argc, char *argv[])
     assert((phase_align_fetch(&pa) & 0xffU) == 0xabU);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xcdU);
     assert((phase_align_fetch(&pa) & 0xffU) == 0xefU);
+
+    /*
+     * Check that we can read the bits back in the same order.
+     */
+    for (int i = 0; i < 8; i++) {
+        uint8_t expected = 0x00U;
+        for (int x = 0; x < 8; x++) {
+            /*
+             * Position 7 is the least significant bit of the first byte,
+             * and position 0 is the most significant bit of the last byte.
+             * Bit position run from 0 to 7 as in a plane of pixels.
+             */
+            phase_align_start(&pa, 7, (i << 3) | x, data);
+            expected |= (phase_align_fetch(&pa) & 0x01U) << (7 - x);
+        }
+        assert(expected == data[i]);
+    }
     return 0;
 }
