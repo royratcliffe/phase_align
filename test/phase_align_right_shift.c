@@ -7,7 +7,7 @@ int test_phase_align_right_shift(int argc, char *argv[])
     uint8_t data[] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0};
     struct phase_align pa;
     /*
-     * Note that the destination x is 4, and the source xSrc is 0.
+     * Note that the destination x is 4, and the source x_store is 0.
      * This means we are shifting the source data right by 4 bits.
      * Bit 0 is the most significant bit of the first byte,
      * and bit 7 is the least significant bit of the last byte.
