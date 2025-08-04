@@ -53,6 +53,13 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
  */
 uint8_t phase_align_fetch(struct phase_align *pa);
 
+/*!
+ * \brief Fetches a byte from a stored buffer.
+ * \param x_store The source bit position relative to the given start of the
+ * buffer, where 0 is the most-significant bit of the first byte.
+ * \param store Pointer to the data buffer.
+ * \return The fetched byte.
+ */
 static inline uint8_t phase_align_byte(int x_store, const uint8_t *store)
 {
     struct phase_align pa;
@@ -60,6 +67,12 @@ static inline uint8_t phase_align_byte(int x_store, const uint8_t *store)
     return phase_align_fetch(&pa);
 }
 
+/*!
+ * \brief Fetches a 16-bit big-endian value from a stored buffer.
+ * \param x_store Bit position in the source buffer (0 is MSB of first byte).
+ * \param store Pointer to the data buffer.
+ * \return The fetched 16-bit value.
+ */
 static inline uint16_t phase_align_be16(int x_store, const uint8_t *store)
 {
     struct phase_align pa;
@@ -67,6 +80,12 @@ static inline uint16_t phase_align_be16(int x_store, const uint8_t *store)
     return (phase_align_fetch(&pa) << 8) | phase_align_fetch(&pa);
 }
 
+/*!
+ * \brief Fetches a 16-bit little-endian value from a stored buffer.
+ * \param x_store Bit position in the source buffer (0 is MSB of first byte).
+ * \param store Pointer to the data buffer.
+ * \return The fetched 16-bit value.
+ */
 static inline uint16_t phase_align_le16(int x_store, const uint8_t *store)
 {
     struct phase_align pa;
@@ -74,6 +93,12 @@ static inline uint16_t phase_align_le16(int x_store, const uint8_t *store)
     return phase_align_fetch(&pa) | (phase_align_fetch(&pa) << 8);
 }
 
+/*!
+ * \brief Fetches a 32-bit big-endian value from a stored buffer.
+ * \param x_store Bit position in the source buffer (0 is MSB of first byte).
+ * \param store Pointer to the data buffer.
+ * \return The fetched 32-bit value.
+ */
 static inline uint32_t phase_align_be32(int x_store, const uint8_t *store)
 {
     struct phase_align pa;
@@ -81,6 +106,12 @@ static inline uint32_t phase_align_be32(int x_store, const uint8_t *store)
     return (phase_align_fetch(&pa) << 24) | (phase_align_fetch(&pa) << 16) | (phase_align_fetch(&pa) << 8) | phase_align_fetch(&pa);
 }
 
+/*!
+ * \brief Fetches a 32-bit little-endian value from a stored buffer.
+ * \param x_store Bit position in the source buffer (0 is MSB of first byte).
+ * \param store Pointer to the data buffer.
+ * \return The fetched 32-bit value.
+ */
 static inline uint32_t phase_align_le32(int x_store, const uint8_t *store)
 {
     struct phase_align pa;
