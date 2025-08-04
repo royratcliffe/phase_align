@@ -13,47 +13,16 @@
 #include <phase_align.h>
 
 /*
- * MISRA-C compliance for rule 8.4: static functions should be declared before use.
+ * MISRA-C compliance for rule 8.4: static functions should be declared before
+ * use. The functions `fetch_left_shift`, `fetch`, and `fetch_right_shift` are
+ * declared before they are defined to ensure that they can be used within the
+ * `phase_align_start` and `phase_align_fetch` functions without any issues.
+ * This is necessary to avoid implicit function declarations, which can lead to
+ * undefined behavior and is against the C11 standard.
  */
 static uint8_t fetch_left_shift(struct phase_align *pa);
 static uint8_t fetch(struct phase_align *pa);
 static uint8_t fetch_right_shift(struct phase_align *pa);
-
-/*!
- * \brief Fetches a 8-bit byte from the phase alignment structure with a left shift.
- * \param pa Pointer to the phase alignment structure.
- * \return The fetched 8-bit byte.
- */
-static uint8_t fetch_left_shift(struct phase_align *pa)
-{
-    const uint8_t lo = *++pa->store; // pre-increment
-    const uint8_t hi = pa->carry;    // carry is the previous value
-    pa->carry = lo;                  // store the current value as carry for the next call
-    return (hi << pa->shift) | (lo >> (8 - pa->shift));
-}
-
-/*!
- * \brief Fetches a 8-bit byte from the phase alignment structure with no shift.
- * \param pa Pointer to the phase alignment structure.
- * \return The fetched 8-bit byte.
- */
-static uint8_t fetch(struct phase_align *pa)
-{
-    return *pa->store++;
-}
-
-/*!
- * \brief Fetches a 8-bit byte from the phase alignment structure with a right shift.
- * \param pa Pointer to the phase alignment structure.
- * \return The fetched 8-bit byte.
- */
-uint8_t fetch_right_shift(struct phase_align *pa)
-{
-    const uint8_t lo = *pa->store++; // post-increment
-    const uint8_t hi = pa->carry;    // carry is the previous value
-    pa->carry = lo;                  // store the current value as carry for the next call
-    return (hi << (8 - pa->shift)) | (lo >> pa->shift);
-}
 
 /*
  * Note that only the least significant three bits of x are used since the
@@ -98,4 +67,40 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
 uint8_t phase_align_fetch(struct phase_align *pa)
 {
     return (*pa->fetch)(pa);
+}
+
+/*!
+ * \brief Fetches a 8-bit byte from the phase alignment structure with a left shift.
+ * \param pa Pointer to the phase alignment structure.
+ * \return The fetched 8-bit byte.
+ */
+static uint8_t fetch_left_shift(struct phase_align *pa)
+{
+    const uint8_t lo = *++pa->store; // pre-increment
+    const uint8_t hi = pa->carry;    // carry is the previous value
+    pa->carry = lo;                  // store the current value as carry for the next call
+    return (hi << pa->shift) | (lo >> (8 - pa->shift));
+}
+
+/*!
+ * \brief Fetches a 8-bit byte from the phase alignment structure with no shift.
+ * \param pa Pointer to the phase alignment structure.
+ * \return The fetched 8-bit byte.
+ */
+static uint8_t fetch(struct phase_align *pa)
+{
+    return *pa->store++;
+}
+
+/*!
+ * \brief Fetches a 8-bit byte from the phase alignment structure with a right shift.
+ * \param pa Pointer to the phase alignment structure.
+ * \return The fetched 8-bit byte.
+ */
+uint8_t fetch_right_shift(struct phase_align *pa)
+{
+    const uint8_t lo = *pa->store++; // post-increment
+    const uint8_t hi = pa->carry;    // carry is the previous value
+    pa->carry = lo;                  // store the current value as carry for the next call
+    return (hi << (8 - pa->shift)) | (lo >> pa->shift);
 }
