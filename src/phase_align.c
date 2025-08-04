@@ -3,7 +3,21 @@
  * SPDX-License-Identifier: MIT
  */
 
- #include <phase_align.h>
+/*!
+ * \file phase_align.c
+ * \brief Phase alignment for 8-bit bytes.
+ * This source file implements the functions for managing phase alignment of
+ * 8-bit bytes, as defined in the `phase_align.h` header file.
+ */
+
+#include <phase_align.h>
+
+/*
+ * MISRA-C compliance for rule 8.4: static functions should be declared before use.
+ */
+static uint8_t fetch_left_shift(struct phase_align *pa);
+static uint8_t fetch(struct phase_align *pa);
+static uint8_t fetch_right_shift(struct phase_align *pa);
 
 /*!
  * \brief Fetches a 8-bit byte from the phase alignment structure with a left shift.

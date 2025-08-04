@@ -6,8 +6,6 @@
 #ifndef PHASE_ALIGN_H
 #define PHASE_ALIGN_H
 
-#include <stdint.h>
-
 /*!
  * \file phase_align.h
  * \brief Phase alignment for 8-bit bytes.
@@ -16,6 +14,8 @@
  * specified shift, which is useful in scenarios where data needs to be aligned
  * or shifted for processing, such as in graphics or display memory management.
  */
+
+#include <stdint.h>
 
 /*!
  * \brief Phase alignment structure.
