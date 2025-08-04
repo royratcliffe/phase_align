@@ -31,10 +31,10 @@
  */
 struct phase_align
 {
-    uint8_t (*fetch)(struct phase_align *phase_align); /*!< Fetch the next byte */
-    const uint8_t *store;                              /*!< Pointer to the data being processed */
-    int shift;                                         /*!< Number of bits to shift the data */
-    uint8_t carry;                                     /*!< Overflow from the previous byte fetch */
+    uint8_t (*fetch)(struct phase_align *pa); /*!< Fetch the next byte */
+    const uint8_t *store;                     /*!< Pointer to the data being processed */
+    int shift;                                /*!< Number of bits to shift the data */
+    uint8_t carry;                            /*!< Overflow from the previous byte fetch */
 };
 
 /*!
