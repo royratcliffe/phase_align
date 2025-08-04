@@ -26,6 +26,7 @@ create_test_sourcelist(test_sources
     test/phase_align_no_shift.c
     test/phase_align_right_shift.c
     test/phase_align_left_shift.c
+    test/le32.c
 )
 
 # Add a test executable that links against the phase_align library.
@@ -39,6 +40,7 @@ target_link_libraries(test_runner phase_align)
 add_test(NAME no_shift COMMAND test_runner test/phase_align_no_shift)
 add_test(NAME right_shift COMMAND test_runner test/phase_align_right_shift)
 add_test(NAME left_shift COMMAND test_runner test/phase_align_left_shift)
+add_test(NAME le32 COMMAND test_runner test/le32)
 
 # https://cmake.org/cmake/help/latest/module/FindDoxygen.html
 # https://www.mcternan.me.uk/mscgen/
