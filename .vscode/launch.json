@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(ctest) Launch",
+      "name": "(ctest) Launch on Linux",
       "type": "cppdbg",
       "request": "launch",
       // Resolved by CMake Tools:
@@ -23,6 +23,16 @@
         }
       ],
       "externalConsole": true
+    },
+    {
+      "name": "(ctest) Launch on Windows",
+      "type": "cppvsdbg",
+      "request": "launch",
+      // Resolved by CMake Tools:
+      "program": "${command:cmake.launchTargetPath}",
+      "args": ["-A"],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
