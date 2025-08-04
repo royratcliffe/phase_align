@@ -17,8 +17,6 @@ target_include_directories(phase_align
         $<INSTALL_INTERFACE:include>
 )
 
-enable_testing()
-
 # Add a CTest executable for running all tests.
 # This will be used to run the tests defined in the test sources.
 # The test sources will be compiled into a test executable.
