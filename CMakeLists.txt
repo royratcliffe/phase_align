@@ -59,9 +59,11 @@ if(CPPCHECK AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         cppcheck
         COMMAND ${CPPCHECK}
             --project=${CMAKE_BINARY_DIR}/compile_commands.json
-            --output-file=${CMAKE_BINARY_DIR}/cppcheck_report.txt
+            --output-file=${CMAKE_BINARY_DIR}/cppcheck_report.xml
+            --xml
             --enable=all
-            --suppressions-list=${CMAKE_SOURCE_DIR}/cmake/cppcheck_suppressions.txt
+            --enable=warning,style,performance,portability,information
+            --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running cppcheck for code analysis"
         # Use VERBATIM to ensure the command is executed as written.
