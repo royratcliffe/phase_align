@@ -17,7 +17,11 @@
  * little-endian architecture where the least significant byte is at the lowest
  * address.
  */
-int test_le32(int argc, char *argv[]) {
+int test_le32(int argc, char *argv[])
+{
+    (void)argc;
+    (void)argv;
+
     const uint32_t store[] = {
         0x12345678U, 0x9abcdef0U, 0x11223344U, 0x55667788U
     };

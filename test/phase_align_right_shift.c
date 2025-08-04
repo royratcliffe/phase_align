@@ -4,6 +4,8 @@
 
 int test_phase_align_right_shift(int argc, char *argv[])
 {
+    (void)argc;
+    (void)argv;
     const uint8_t data[] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0};
     struct phase_align pa;
     /*
