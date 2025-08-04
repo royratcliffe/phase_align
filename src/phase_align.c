@@ -71,10 +71,9 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
     else
     {
         /*
-         * Carry starts off as undefined for right shifts. The first byte
-         * fetched will be the most significant byte of the first byte in the
-         * store buffer, and subsequent calls will use the carry from the
-         * previous fetch.
+         * Carry starts off as undefined for right shifts. Make it zero so that
+         * the first byte fetched does not have any undefined overflow from the
+         * previous non-byte.
          */
         pa->fetch = &fetch_right_shift;
         pa->shift = shift;
