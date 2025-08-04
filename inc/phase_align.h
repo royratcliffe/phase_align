@@ -53,4 +53,39 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
  */
 uint8_t phase_align_fetch(struct phase_align *pa);
 
+static inline uint8_t phase_align_byte(int x_store, const uint8_t *store)
+{
+    struct phase_align pa;
+    phase_align_start(&pa, 0, x_store, store);
+    return phase_align_fetch(&pa);
+}
+
+static inline uint16_t phase_align_be16(int x_store, const uint8_t *store)
+{
+    struct phase_align pa;
+    phase_align_start(&pa, 0, x_store, store);
+    return (phase_align_fetch(&pa) << 8) | phase_align_fetch(&pa);
+}
+
+static inline uint16_t phase_align_le16(int x_store, const uint8_t *store)
+{
+    struct phase_align pa;
+    phase_align_start(&pa, 0, x_store, store);
+    return phase_align_fetch(&pa) | (phase_align_fetch(&pa) << 8);
+}
+
+static inline uint32_t phase_align_be32(int x_store, const uint8_t *store)
+{
+    struct phase_align pa;
+    phase_align_start(&pa, 0, x_store, store);
+    return (phase_align_fetch(&pa) << 24) | (phase_align_fetch(&pa) << 16) | (phase_align_fetch(&pa) << 8) | phase_align_fetch(&pa);
+}
+
+static inline uint32_t phase_align_le32(int x_store, const uint8_t *store)
+{
+    struct phase_align pa;
+    phase_align_start(&pa, 0, x_store, store);
+    return phase_align_fetch(&pa) | (phase_align_fetch(&pa) << 8) | (phase_align_fetch(&pa) << 16) | (phase_align_fetch(&pa) << 24);
+}
+
 #endif /* PHASE_ALIGN_H */
