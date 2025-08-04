@@ -17,17 +17,16 @@ target_include_directories(phase_align
         $<INSTALL_INTERFACE:include>
 )
 
-enable_testing()
-
 # Add a CTest executable for running all tests.
 # This will be used to run the tests defined in the test sources.
 # The test sources will be compiled into a test executable.
 include(CTest)
 create_test_sourcelist(test_sources
     test_runner.c
-    test/phase_align_1.c
+    test/phase_align_no_shift.c
     test/phase_align_right_shift.c
     test/phase_align_left_shift.c
+    test/le32.c
 )
 
 # Add a test executable that links against the phase_align library.
@@ -38,9 +37,10 @@ add_executable(test_runner
 )
 target_link_libraries(test_runner phase_align)
 
-add_test(NAME phase_align_test_1 COMMAND test_runner test/phase_align_1)
-add_test(NAME phase_align_test_right_shift COMMAND test_runner test/phase_align_right_shift)
-add_test(NAME phase_align_test_left_shift COMMAND test_runner test/phase_align_left_shift)
+add_test(NAME no_shift COMMAND test_runner test/phase_align_no_shift)
+add_test(NAME right_shift COMMAND test_runner test/phase_align_right_shift)
+add_test(NAME left_shift COMMAND test_runner test/phase_align_left_shift)
+add_test(NAME le32 COMMAND test_runner test/le32)
 
 # https://cmake.org/cmake/help/latest/module/FindDoxygen.html
 # https://www.mcternan.me.uk/mscgen/
@@ -51,7 +51,26 @@ if(DOXYGEN_FOUND)
     doxygen_add_docs(doxy ${PROJECT_SOURCE_DIR}/inc ${PROJECT_SOURCE_DIR}/src)
 endif()
 
-# Before running the full analysis, `cppcheck` needs to parse the source files
-# correctly. If headers are missing or configuration macros are wrong, the
-# analysis results will prove to be incomplete or misleading.
-set(CMAKE_C_CPPCHECK "cppcheck;--enable=all;--inconclusive;--quiet")
+# Add custom commands for code analysis. Enable cppcheck for Debug build type.
+# This will run cppcheck only if the build type is Debug.
+find_program(CPPCHECK cppcheck)
+if(CPPCHECK AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_custom_target(
+        cppcheck
+        COMMAND ${CPPCHECK}
+            --project=${CMAKE_BINARY_DIR}/compile_commands.json
+            --output-file=${CMAKE_BINARY_DIR}/cppcheck_report.xml
+            --xml
+            --enable=all
+            --enable=warning,style,performance,portability,information
+            --suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running cppcheck for code analysis"
+        # Use VERBATIM to ensure the command is executed as written.
+        # This is useful for handling paths with spaces or special characters.
+        VERBATIM
+    )
+    set_property(TARGET cppcheck PROPERTY FOLDER "Analysis")
+else()
+    message(STATUS "Cppcheck not found or not enabled for Debug build type")
+endif()

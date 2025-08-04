@@ -1,4 +1,73 @@
+/*
+ * SPDX-FileCopyrightText: 1996, 1998, 1999, 2002, Roy Ratcliffe, Northumberland, United Kingdom
+ * SPDX-License-Identifier: MIT
+ */
+
+/*!
+ * \file phase_align.c
+ * \brief Phase alignment for 8-bit bytes.
+ * This source file implements the functions for managing phase alignment of
+ * 8-bit bytes, as defined in the `phase_align.h` header file.
+ */
+
 #include <phase_align.h>
+
+/*
+ * MISRA-C compliance for rule 8.4: static functions should be declared before
+ * use. The functions `fetch_left_shift`, `fetch`, and `fetch_right_shift` are
+ * declared before they are defined to ensure that they can be used within the
+ * `phase_align_start` and `phase_align_fetch` functions without any issues.
+ * This is necessary to avoid implicit function declarations, which can lead to
+ * undefined behavior and is against the C11 standard.
+ */
+static uint8_t fetch_left_shift(struct phase_align *pa);
+static uint8_t fetch(struct phase_align *pa);
+static uint8_t fetch_right_shift(struct phase_align *pa);
+
+/*
+ * Note that only the least significant three bits of x are used since the
+ * output is always a byte (8 bits). The shift value is calculated based on the
+ * difference between the destination x and the source x_store. The output
+ * stream appears as a sequence of bytes returned by the phase_align_fetch
+ * function, where each byte is shifted according to the specified shift value.
+ */
+void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t *store)
+{
+    pa->store = store + (x_store >> 3);
+    int shift = (x & 0x7U) - (x_store & 0x7U);
+    if (shift < 0)
+    {
+        pa->fetch = &fetch_left_shift;
+        pa->shift = -shift;
+        pa->carry = *pa->store;
+    }
+    else if (shift == 0)
+    {
+        pa->fetch = &fetch;
+        /*
+         * Shift and carry are not used when there is no shift.
+         * Be tidy and set them to zero.
+         */
+        pa->shift = 0;
+        pa->carry = 0x00U;
+    }
+    else
+    {
+        /*
+         * Carry starts off as undefined for right shifts. Make it zero so that
+         * the first byte fetched does not have any undefined overflow from the
+         * previous non-byte.
+         */
+        pa->fetch = &fetch_right_shift;
+        pa->shift = shift;
+        pa->carry = 0x00U;
+    }
+}
+
+uint8_t phase_align_fetch(struct phase_align *pa)
+{
+    return (*pa->fetch)(pa);
+}
 
 /*!
  * \brief Fetches a 8-bit byte from the phase alignment structure with a left shift.
@@ -34,49 +103,4 @@ uint8_t fetch_right_shift(struct phase_align *pa)
     const uint8_t hi = pa->carry;    // carry is the previous value
     pa->carry = lo;                  // store the current value as carry for the next call
     return (hi << (8 - pa->shift)) | (lo >> pa->shift);
-}
-
-/*!
- * \brief Initialises the phase alignment structure.
- * This function sets up the phase alignment structure with the given parameters.
- * \param pa Pointer to the phase alignment structure.
- * \param x The destination bit position.
- * \param x_store The source bit position.
- * \param store Pointer to the data buffer.
- */
-void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t *store)
-{
-    pa->store = store + (x_store >> 3);
-    int shift = (x & 0x7U) - (x_store & 0x7U);
-    if (shift < 0)
-    {
-        pa->fetch = &fetch_left_shift;
-        pa->shift = -shift;
-        pa->carry = *pa->store;
-    }
-    else if (shift == 0)
-    {
-        pa->fetch = &fetch;
-    }
-    else
-    {
-        /*
-         * Carry starts off as undefined for right shifts. The first byte
-         * fetched will be the most significant byte of the first byte in the
-         * store buffer, and subsequent calls will use the carry from the
-         * previous fetch.
-         */
-        pa->fetch = &fetch_right_shift;
-        pa->shift = shift;
-    }
-}
-
-/*!
- * \brief Fetches the next byte from the phase alignment structure.
- * \param pa Pointer to the phase alignment structure.
- * \return The fetched byte.
- */
-uint8_t phase_align_fetch(struct phase_align *pa)
-{
-    return (*pa->fetch)(pa);
 }
