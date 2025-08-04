@@ -24,8 +24,9 @@
  * and a shift count.
  *
  * The `fetch` function pointer is used to retrieve the next byte in the
- * phase-aligned stream. The `store` pointer points to the data being processed.
- * The `shift` value indicates how many bits to shift the data. The `carry`
+ * phase-aligned stream, either by left shifting, right shifting, or no
+ * shifting. The `store` pointer points to the data being processed. The `shift`
+ * value indicates how many bits to shift the data. The `carry`
  * value is used to hold any overflow from the previous byte fetch.
  */
 struct phase_align
