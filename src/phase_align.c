@@ -61,6 +61,12 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
     else if (shift == 0)
     {
         pa->fetch = &fetch;
+        /*
+         * Shift and carry are not used when there is no shift.
+         * Be tidy and set them to zero.
+         */
+        pa->shift = 0;
+        pa->carry = 0x00U;
     }
     else
     {
@@ -72,6 +78,7 @@ void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t
          */
         pa->fetch = &fetch_right_shift;
         pa->shift = shift;
+        pa->carry = 0x00U;
     }
 }
 
