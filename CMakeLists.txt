@@ -51,7 +51,24 @@ if(DOXYGEN_FOUND)
     doxygen_add_docs(doxy ${PROJECT_SOURCE_DIR}/inc ${PROJECT_SOURCE_DIR}/src)
 endif()
 
-# Before running the full analysis, `cppcheck` needs to parse the source files
-# correctly. If headers are missing or configuration macros are wrong, the
-# analysis results will prove to be incomplete or misleading.
-set(CMAKE_C_CPPCHECK "cppcheck;--enable=all;--inconclusive;--quiet")
+# Add custom commands for code analysis. Enable cppcheck for Debug build type.
+# This will run cppcheck only if the build type is Debug.
+find_program(CPPCHECK cppcheck)
+if(CPPCHECK AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_custom_target(
+        cppcheck
+        COMMAND ${CPPCHECK}
+            --project=${CMAKE_BINARY_DIR}/compile_commands.json
+            --output-file=${CMAKE_BINARY_DIR}/cppcheck_report.txt
+            --enable=all
+            --suppressions-list=${CMAKE_SOURCE_DIR}/cmake/cppcheck_suppressions.txt
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running cppcheck for code analysis"
+        # Use VERBATIM to ensure the command is executed as written.
+        # This is useful for handling paths with spaces or special characters.
+        VERBATIM
+    )
+    set_property(TARGET cppcheck PROPERTY FOLDER "Analysis")
+else()
+    message(STATUS "Cppcheck not found or not enabled for Debug build type")
+endif()
