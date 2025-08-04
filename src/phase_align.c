@@ -41,6 +41,13 @@ uint8_t fetch_right_shift(struct phase_align *pa)
     return (hi << (8 - pa->shift)) | (lo >> pa->shift);
 }
 
+/*
+ * Note that only the least significant three bits of x are used since the
+ * output is always a byte (8 bits). The shift value is calculated based on the
+ * difference between the destination x and the source x_store. The output
+ * stream appears as a sequence of bytes returned by the phase_align_fetch
+ * function, where each byte is shifted according to the specified shift value.
+ */
 void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t *store)
 {
     pa->store = store + (x_store >> 3);
