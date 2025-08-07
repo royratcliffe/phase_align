@@ -25,6 +25,13 @@ static uint8_t fetch(struct phase_align *pa);
 static uint8_t fetch_right_shift(struct phase_align *pa);
 
 /*
+ * Decide how to fetch the source bits. There are three phase-align functions to
+ * choose from, based on how the bits are out of phase. The destination
+ * alignment is x & 7, i.e. how many bits from the left side of the byte.
+ * Expression x_store & 7 gives the source alignment. The sign and magnitude of
+ * the difference between the alignments determines the direction and amount of
+ * shift.
+ *
  * Note that only the least significant three bits of x are used since the
  * output is always a byte (8 bits). The shift value is calculated based on the
  * difference between the destination x and the source x_store. The output
