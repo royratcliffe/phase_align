@@ -41,7 +41,7 @@ static uint8_t fetch_right_shift(struct phase_align *pa);
 void phase_align_start(struct phase_align *pa, int x, int x_store, const uint8_t *store)
 {
     pa->store = store + (x_store >> 3);
-    int shift = (x & 0x7U) - (x_store & 0x7U);
+    int shift = (x & 7) - (x_store & 7);
     if (shift < 0)
     {
         pa->fetch = &fetch_left_shift;
