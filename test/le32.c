@@ -2,16 +2,23 @@
 
 #include <phase_align.h>
 
-static inline uint32_t bswap_32(uint32_t x)
+static inline uint32_t bswap_32(uint32_t xxxx)
 {
-    return ((x >> 24) & 0x000000ffU) |
-           ((x >> 8) & 0x0000ff00U) |
-           ((x << 8) & 0x00ff0000U) |
-           ((x << 24) & 0xff000000U);
+    return ((xxxx >> 24) & 0x000000ffU) |
+           ((xxxx >> 8) & 0x0000ff00U) |
+           ((xxxx << 8) & 0x00ff0000U) |
+           ((xxxx << 24) & 0xff000000U);
 }
 
 /*!
  * \brief Determines if the system is big-endian.
+ * This is a common technique to check endianness, as it relies on the fact that
+ * in a big-endian system, the most significant byte is stored at the lowest
+ * address.
+ *
+ * Testing all but the first byte of a 32-bit integer to determine endianness
+ * might seem redundant, but it ensures that the system's byte order is indeed
+ * big-endian; and not something else entirely, not even little-endian.
  * \return 1 if big-endian, 0 if little-endian.
  */
 static inline int is_big_endian(void)
@@ -19,7 +26,7 @@ static inline int is_big_endian(void)
     union
     {
         uint32_t xxxx;
-        uint8_t x[4U];
+        uint8_t x[4];
     } endian = {0x11223344U};
     return endian.x[0] == 0x11U &&
            endian.x[1] == 0x22U &&
