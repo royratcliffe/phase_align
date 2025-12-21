@@ -83,9 +83,9 @@ uint8_t phase_align_fetch(struct phase_align *pa)
  */
 static uint8_t fetch_left_shift(struct phase_align *pa)
 {
-    const uint8_t lo = *++pa->store; // pre-increment
-    const uint8_t hi = pa->carry;    // carry is the previous value
-    pa->carry = lo;                  // store the current value as carry for the next call
+    const uint8_t lo = *++pa->store; /* pre-increment */
+    const uint8_t hi = pa->carry;    /* carry is the previous value */
+    pa->carry = lo;                  /* store the current value as carry for the next call */
     return (hi << pa->shift) | (lo >> (8 - pa->shift));
 }
 
@@ -106,8 +106,8 @@ static uint8_t fetch(struct phase_align *pa)
  */
 uint8_t fetch_right_shift(struct phase_align *pa)
 {
-    const uint8_t lo = *pa->store++; // post-increment
-    const uint8_t hi = pa->carry;    // carry is the previous value
-    pa->carry = lo;                  // store the current value as carry for the next call
+    const uint8_t lo = *pa->store++; /* post-increment */
+    const uint8_t hi = pa->carry;    /* carry is the previous value */
+    pa->carry = lo;                  /* store the current value as carry for the next call */
     return (hi << (8 - pa->shift)) | (lo >> pa->shift);
 }
