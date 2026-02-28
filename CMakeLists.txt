@@ -48,7 +48,11 @@ find_package(Doxygen OPTIONAL_COMPONENTS dot mscgen dia)
 if(DOXYGEN_FOUND)
     set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
     set(DOXYGEN_SOURCE_BROWSER YES)
-    doxygen_add_docs(doxy ${PROJECT_SOURCE_DIR}/inc ${PROJECT_SOURCE_DIR}/src)
+    doxygen_add_docs(doxy
+        ${PROJECT_SOURCE_DIR}/inc
+        ${PROJECT_SOURCE_DIR}/src
+        COMMENT "Generating API documentation with Doxygen"
+    )
 endif()
 
 # Add custom commands for code analysis. Enable cppcheck for Debug build type.
