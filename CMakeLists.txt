@@ -105,7 +105,6 @@ if(LCOV AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMAND ${LCOV} --capture --directory . --output-file coverage.info
         COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/test*' --output-file coverage_filtered.info
-        DEPENDS ctest
     )
 
     find_program(GENHTML genhtml)
