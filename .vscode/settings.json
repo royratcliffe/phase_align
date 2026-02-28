@@ -1,4 +1,11 @@
 {
+    "testing.coverageToolbarEnabled": true,
+    "cmake.coverageInfoFiles": [
+        "${workspaceFolder}/build/coverage_filtered.info"
+    ],
+    "cmake.preRunCoverageTarget": "lcov",
+    "cmake.postRunCoverageTarget": "genhtml",
+    "testing.defaultGutterClickAction": "runWithCoverage",
     "files.associations": {
         "*.h": "c"
     }
