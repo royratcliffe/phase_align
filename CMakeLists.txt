@@ -74,3 +74,46 @@ if(CPPCHECK AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     message(STATUS "Cppcheck not found or not enabled for Debug build type")
 endif()
+
+# Add custom commands for code coverage analysis. Enable lcov and genhtml if
+# they are found. Only enable code coverage analysis for Debug build type, as it
+# is typically used for development and testing.
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    find_program(LCOV lcov)
+endif()
+
+# If lcov is found, add the necessary compiler and linker flags to enable code
+# coverage analysis.
+if(LCOV)
+    target_compile_options(phase_align PRIVATE --coverage)
+    target_compile_options(test_runner PRIVATE --coverage)
+    target_link_options(phase_align PRIVATE --coverage)
+    target_link_options(test_runner PRIVATE --coverage)
+
+    # Add custom targets for code coverage analysis using lcov and genhtml.
+    # These targets will run the tests, capture coverage data, and generate an HTML report.
+    add_custom_target(ctest
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        DEPENDS test_runner
+    )
+    add_custom_target(lcov
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${LCOV} --capture --directory . --output-file coverage.info
+        COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/test*' --output-file coverage_filtered.info
+        DEPENDS ctest
+    )
+
+    find_program(GENHTML genhtml)
+    if(GENHTML)
+        message(STATUS "lcov and genhtml found, code coverage targets will be available")
+        add_custom_target(genhtml
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_report
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated in: ${CMAKE_BINARY_DIR}/coverage_report/index.html"
+            DEPENDS lcov
+        )
+    else()
+        message(STATUS "lcov and/or genhtml not found, code coverage targets will not be available")
+    endif()
+endif()
