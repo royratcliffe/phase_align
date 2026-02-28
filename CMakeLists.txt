@@ -117,6 +117,6 @@ if(LCOV AND CMAKE_BUILD_TYPE STREQUAL "Debug")
             DEPENDS lcov
         )
     else()
-        message(STATUS "lcov and/or genhtml not found, code coverage targets will not be available")
+        message(STATUS "genhtml not found, HTML code coverage report target will not be available")
     endif()
 endif()
