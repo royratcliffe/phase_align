@@ -46,9 +46,13 @@ add_test(NAME le32 COMMAND test_runner test/le32)
 # https://www.mcternan.me.uk/mscgen/
 find_package(Doxygen OPTIONAL_COMPONENTS dot mscgen dia)
 if(DOXYGEN_FOUND)
-    set(OPTIMIZE_OUTPUT_FOR_C YES)
+    set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
     set(DOXYGEN_SOURCE_BROWSER YES)
-    doxygen_add_docs(doxy ${PROJECT_SOURCE_DIR}/inc ${PROJECT_SOURCE_DIR}/src)
+    doxygen_add_docs(doxy
+        ${PROJECT_SOURCE_DIR}/inc
+        ${PROJECT_SOURCE_DIR}/src
+        COMMENT "Generating API documentation with Doxygen"
+    )
 endif()
 
 # Add custom commands for code analysis. Enable cppcheck for Debug build type.
@@ -73,4 +77,56 @@ if(CPPCHECK AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     set_property(TARGET cppcheck PROPERTY FOLDER "Analysis")
 else()
     message(STATUS "Cppcheck not found or not enabled for Debug build type")
+endif()
+
+# Add custom commands for code coverage analysis. Enable lcov and genhtml if
+# they are found. Only enable code coverage analysis for Debug build type, as it
+# is typically used for development and testing. Code coverage analysis can add
+# overhead to the build and runtime, so it is generally not recommended for
+# Release builds.
+#
+# If lcov is found, add the coverage compiler and linker flags to enable code
+# coverage analysis.
+#
+# Note that find_program will return the path to the executable if found, or
+# NOTFOUND if not found. It will also cache the result, so subsequent calls will
+# return the cached value. This allows us to check if lcov is available and
+# conditionally add code coverage targets.
+find_program(LCOV lcov)
+if(LCOV AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(phase_align PRIVATE --coverage)
+    target_compile_options(test_runner PRIVATE --coverage)
+    target_link_options(phase_align PRIVATE --coverage)
+    target_link_options(test_runner PRIVATE --coverage)
+
+    # Add custom targets for code coverage analysis using lcov and genhtml.
+    # These targets will run the tests, capture coverage data, and generate an HTML report.
+    add_custom_target(ctest
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+        DEPENDS test_runner
+    )
+    add_custom_target(lcov
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMAND ${LCOV} --capture --directory . --output-file coverage.info
+        COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/test*' --output-file coverage_filtered.info
+    )
+    set_property(TARGET lcov PROPERTY FOLDER "Analysis")
+
+    # If genhtml is found, add a custom target to generate an HTML report from the
+    # filtered coverage data. This will create a coverage_report directory with an
+    # index.html file that can be opened in a web browser to view the coverage report.
+    find_program(GENHTML genhtml)
+    if(GENHTML)
+        message(STATUS "lcov and genhtml found, code coverage targets will be available")
+        add_custom_target(genhtml
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_report
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated in: ${CMAKE_BINARY_DIR}/coverage_report/index.html"
+            DEPENDS lcov
+        )
+        set_property(TARGET genhtml PROPERTY FOLDER "Analysis")
+    else()
+        message(STATUS "genhtml not found, HTML code coverage report target will not be available")
+    endif()
 endif()
