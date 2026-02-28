@@ -78,13 +78,17 @@ endif()
 # Add custom commands for code coverage analysis. Enable lcov and genhtml if
 # they are found. Only enable code coverage analysis for Debug build type, as it
 # is typically used for development and testing.
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    find_program(LCOV lcov)
-endif()
-
+# Note that code coverage analysis can add overhead to the build and runtime, so
+# it is generally not recommended for Release builds.
+#
 # If lcov is found, add the necessary compiler and linker flags to enable code
 # coverage analysis.
-if(LCOV)
+# Note that find_program will return the path to the executable if found, or
+# NOTFOUND if not found. It will also cache the result, so subsequent calls will
+# return the cached value. This allows us to check if lcov is available and
+# conditionally add code coverage targets.
+find_program(LCOV lcov)
+if(LCOV AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(phase_align PRIVATE --coverage)
     target_compile_options(test_runner PRIVATE --coverage)
     target_link_options(phase_align PRIVATE --coverage)
