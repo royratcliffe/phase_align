@@ -106,6 +106,7 @@ if(LCOV AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         COMMAND ${LCOV} --capture --directory . --output-file coverage.info
         COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/test*' --output-file coverage_filtered.info
     )
+    set_property(TARGET lcov PROPERTY FOLDER "Analysis")
 
     find_program(GENHTML genhtml)
     if(GENHTML)
@@ -116,6 +117,7 @@ if(LCOV AND CMAKE_BUILD_TYPE STREQUAL "Debug")
             COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated in: ${CMAKE_BINARY_DIR}/coverage_report/index.html"
             DEPENDS lcov
         )
+        set_property(TARGET genhtml PROPERTY FOLDER "Analysis")
     else()
         message(STATUS "genhtml not found, HTML code coverage report target will not be available")
     endif()
